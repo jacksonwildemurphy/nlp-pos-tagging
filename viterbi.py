@@ -34,14 +34,11 @@ def find_seq_logprobs(sentence, tags):
     # Initialize matrices
     for t in range(len(tags)):
         scores[t][0] = (get_cond_logprob(words[0],tags[t]) + get_cond_logprob(tags[t],"phi"))
-        #print("first word probability of " + words[0] + " as " + tags[t] + ": " + str(scores[t][0]))
         backptrs[t][0] = 0
-    #print("Scores: " + str(scores))
     # Fill out matrices
     for w in range(1, len(words)):
         for t in range(len(tags)):
             [max_score, max_index] = find_prev_word_max(scores, tags, w-1, tags[t])
-            #print("max score of word before " + words[w] + " is: " + str(max_score) + " at index: " + str(max_index))
             scores[t][w] = get_cond_logprob(words[w],tags[t]) + max_score
             backptrs[t][w] = max_index
     return [scores, backptrs]
@@ -56,15 +53,14 @@ def get_cond_logprob(x,y):
         else:
             return logprob_table[key]
 
+
 # Gets the best POS tag for the previous word (max_idx), along with
 # the previous word's log prob associated with that tag
 def find_prev_word_max(scores, tags, prev_word_idx, tag):
     max_so_far = -(2 ** 63) - 1  # akin to minInt
     max_idx = -1
     for i in range(len(tags)):
-        #print(str(scores[i][prev_word_idx]) + " " + str(get_cond_logprob(tag, tags[i])))
         prob = scores[i][prev_word_idx] + get_cond_logprob(tag, tags[i])
-        #print("probability of find previous word max: " + str(prob))
         if prob > max_so_far:
             max_so_far = prob
             max_idx = i
@@ -74,6 +70,8 @@ def find_prev_word_max(scores, tags, prev_word_idx, tag):
     return [max_so_far, max_idx]
 
 
+# Extracts the most likely part-of-speech tag sequence for a sentence,
+# and also returns the probability (log2) of that best sequence
 def get_best_sequence(sentence, scores, backptrs, tags):
     # Find the best score for the last word in the sentence
     max_so_far = -(2 ** 63) - 1 # basically minInt
@@ -92,9 +90,10 @@ def get_best_sequence(sentence, scores, backptrs, tags):
     t = max_idx  # t = tag index
     for w in range(len(scores[0])):
         best_sequence.append(words[len(words) - w - 1] + " " + tags[t])
-        t = backptrs[t][w]
+        t = backptrs[t][len(words)-w-1]
     best_sequence_logprob = max_so_far
     return [best_sequence, best_sequence_logprob]
+
 
 def print_results(backptrs, best_sequence, best_sequence_logprob, scores, sentence, tags):
     print("PROCESSING SENTENCE: ", sentence)
@@ -104,7 +103,7 @@ def print_results(backptrs, best_sequence, best_sequence_logprob, scores, senten
         for row in range(len(scores)):
             print("P(" + words[col] + "=" + tags[row] + ") = " + "{0:.4f}".format(scores[row][col]))
     print("\nFINAL BACKPTR NETWORK")
-    for col in range(len(scores[0])-1, 0, -1): # Iterate from last column to second column
+    for col in range(1, len(scores[0])):
         for row in range(len(scores)):
             print("Backptr(" + words[col] + "=" + tags[row] + ") = " + tags[backptrs[row][col]])
     print("\nBEST TAG SEQUENCE HAS LOG PROBABILITY = ", "{0:.4f}".format(best_sequence_logprob))
