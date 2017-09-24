@@ -33,7 +33,7 @@ def find_seq_logprobs(sentence):
     scores = backptrs = [[0 for x in range(w)] for y in range(h)] # score probs are log2
     # Initialize matrices
     for t in range(len(tags)):
-        scores[t,1] = (get_cond_logprob(words[0],tags[t]) + get_cond_logprob(tags[t],"phi"))
+        scores[t][1] = (get_cond_logprob(words[0],tags[t]) + get_cond_logprob(tags[t],"phi"))
         backptrs = 0
     # Fill out matrices
     for w in range(1, len(words)):
@@ -74,9 +74,9 @@ def get_best_sequence(sentence, scores, backptrs, tags):
     max_so_far = -(2 ** 63) - 1 # basically minInt
     max_idx = -1
     tag_count = len(scores[:][1])
-    last_word_col = len(scores[1,:])
+    last_word_col = len(scores)
     for t in range(tag_count):
-        logprob = scores[t, last_word_col]
+        logprob = scores[t][last_word_col]
         if logprob > max_so_far:
             max_so_far = logprob
             max_idx = t
@@ -85,9 +85,9 @@ def get_best_sequence(sentence, scores, backptrs, tags):
     best_sequence = []
     words = sentence.split()
     t = max_idx  # t = tag index
-    for w in range(len(scores[1,:])):
+    for w in range(len(scores[0])):
         best_sequence.append(words[len(words)] - w - 1 + " " + tags[t])
-        t = backptrs[t,w]
+        t = backptrs[t][w]
     best_sequence_logprob = max_so_far
     return [best_sequence, best_sequence_logprob]
 
@@ -95,13 +95,13 @@ def print_results(backptrs, best_sequence, best_sequence_logprob, scores, senten
     print("PROCESSING SENTENCE: ", sentence)
     print("\nFINAL VITERBI NETWORK")
     words = sentence.split()
-    for col in range(len(scores[1,:])):
-        for row in range(len(scores[:,1])):
-            print("P(" + word[col] + "=" + tags[row] + ") = " + scores[row,col])
+    for col in range(len(scores[0])):
+        for row in range(len(scores)):
+            print("P(" + word[col] + "=" + tags[row] + ") = " + scores[row][col])
     print("\nFINAL BACKPTR NETWORK")
-    for col in range(len(scores[1,:]), 1, -1): # Iterate from last column to second column
-        for row in range(len(scores[:,1])):
-            print("Backptr(" + words[col] + "=" + tags[row] + ") = " + tags[backptrs[row,col]])
+    for col in range(len(scores[0]), 1, -1): # Iterate from last column to second column
+        for row in range(len(scores)):
+            print("Backptr(" + words[col] + "=" + tags[row] + ") = " + tags[backptrs[row][col]])
     print("\nBEST TAG SEQUENCE HAS LOG PROBABILITY = ", best_sequence_logprob)
     for i in range(len(best_sequence)):
         word_tag = best_sequence[i].split()
