@@ -34,7 +34,7 @@ def find_seq_logprobs(sentence):
     # Initialize matrices
     for t in range(len(tags)):
         scores[t][1] = (get_cond_logprob(words[0],tags[t]) + get_cond_logprob(tags[t],"phi"))
-        backptrs = 0
+        backptrs[t][1] = 0
     # Fill out matrices
     for w in range(1, len(words)):
         for t in range(len(tags)):
@@ -73,8 +73,8 @@ def get_best_sequence(sentence, scores, backptrs, tags):
     # Find the best score for the last word in the sentence
     max_so_far = -(2 ** 63) - 1 # basically minInt
     max_idx = -1
-    tag_count = len(scores[:][1])
-    last_word_col = len(scores)
+    tag_count = len(scores)
+    last_word_col = len(scores[0]) - 1
     for t in range(tag_count):
         logprob = scores[t][last_word_col]
         if logprob > max_so_far:
@@ -86,26 +86,27 @@ def get_best_sequence(sentence, scores, backptrs, tags):
     words = sentence.split()
     t = max_idx  # t = tag index
     for w in range(len(scores[0])):
-        best_sequence.append(words[len(words)] - w - 1 + " " + tags[t])
+        best_sequence.append(words[len(words) - w - 1] + " " + tags[t])
         t = backptrs[t][w]
     best_sequence_logprob = max_so_far
     return [best_sequence, best_sequence_logprob]
 
 def print_results(backptrs, best_sequence, best_sequence_logprob, scores, sentence, tags):
     print("PROCESSING SENTENCE: ", sentence)
-    print("\nFINAL VITERBI NETWORK")
+    print("FINAL VITERBI NETWORK")
     words = sentence.split()
     for col in range(len(scores[0])):
         for row in range(len(scores)):
-            print("P(" + word[col] + "=" + tags[row] + ") = " + scores[row][col])
+            print("P(" + words[col] + "=" + tags[row] + ") = " + "{0:.4f}".format(scores[row][col]))
     print("\nFINAL BACKPTR NETWORK")
-    for col in range(len(scores[0]), 1, -1): # Iterate from last column to second column
+    for col in range(len(scores[0])-1, 0, -1): # Iterate from last column to second column
         for row in range(len(scores)):
             print("Backptr(" + words[col] + "=" + tags[row] + ") = " + tags[backptrs[row][col]])
-    print("\nBEST TAG SEQUENCE HAS LOG PROBABILITY = ", best_sequence_logprob)
+    print("\nBEST TAG SEQUENCE HAS LOG PROBABILITY = ", "{0:.4f}".format(best_sequence_logprob))
     for i in range(len(best_sequence)):
         word_tag = best_sequence[i].split()
         print(word_tag[0] + " -> " + word_tag[1])
+    print()
 
 
 ###### START OF PROGRAM ######
