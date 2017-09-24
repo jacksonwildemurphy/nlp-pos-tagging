@@ -25,20 +25,23 @@ def add_to_logprob_table(cond_prob, logprob_table):
 # Returns a 2D matrix ("scores") of the best log probabilities for each word in a sentence,
 # using the earlier generated conditional probability table.
 # Also returns a 2D matrix ("back pointers") for recovering the sequences used to generate the "scores"
-def find_seq_logprobs(sentence):
+def find_seq_logprobs(sentence, tags):
     words = sentence.split()
-    tags = ["noun", "verb", "inf", "prep"]
     # Create the two 2D matrices
     w, h = len(words), len(tags);
-    scores = backptrs = [[0 for x in range(w)] for y in range(h)] # score probs are log2
+    scores = [[0 for x in range(w)] for y in range(h)] # score probs are log2
+    backptrs = [[0 for x in range(w)] for y in range(h)]
     # Initialize matrices
     for t in range(len(tags)):
-        scores[t][1] = (get_cond_logprob(words[0],tags[t]) + get_cond_logprob(tags[t],"phi"))
-        backptrs[t][1] = 0
+        scores[t][0] = (get_cond_logprob(words[0],tags[t]) + get_cond_logprob(tags[t],"phi"))
+        #print("first word probability of " + words[0] + " as " + tags[t] + ": " + str(scores[t][0]))
+        backptrs[t][0] = 0
+    #print("Scores: " + str(scores))
     # Fill out matrices
     for w in range(1, len(words)):
         for t in range(len(tags)):
             [max_score, max_index] = find_prev_word_max(scores, tags, w-1, tags[t])
+            #print("max score of word before " + words[w] + " is: " + str(max_score) + " at index: " + str(max_index))
             scores[t][w] = get_cond_logprob(words[w],tags[t]) + max_score
             backptrs[t][w] = max_index
     return [scores, backptrs]
@@ -59,7 +62,9 @@ def find_prev_word_max(scores, tags, prev_word_idx, tag):
     max_so_far = -(2 ** 63) - 1  # akin to minInt
     max_idx = -1
     for i in range(len(tags)):
+        #print(str(scores[i][prev_word_idx]) + " " + str(get_cond_logprob(tag, tags[i])))
         prob = scores[i][prev_word_idx] + get_cond_logprob(tag, tags[i])
+        #print("probability of find previous word max: " + str(prob))
         if prob > max_so_far:
             max_so_far = prob
             max_idx = i
@@ -126,6 +131,6 @@ for line in probabilities_file:
 # Read in sentences from input file, calculate their POS probabilities, id best sequence, print info
 sentences_file = open(sys.argv[2])
 for sentence in sentences_file:
-    [scores, backptrs] = find_seq_logprobs(sentence.lower())
+    [scores, backptrs] = find_seq_logprobs(sentence.lower(), tags)
     [best_sequence, best_sequence_logprob] = get_best_sequence(sentence, scores, backptrs, tags)
     print_results(backptrs, best_sequence, best_sequence_logprob, scores, sentence, tags)
