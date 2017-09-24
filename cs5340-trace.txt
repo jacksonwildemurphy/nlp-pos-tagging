@@ -1,0 +1,113 @@
+PROCESSING SENTENCE: bears fish
+
+FINAL VITERBI NETWORK
+P(bears=noun) = -5.9658
+P(bears=verb) = -8.9658
+P(bears=inf) = -26.5754
+P(bears=prep) = -26.5754
+P(fish=noun) = -12.9867
+P(fish=verb) = -10.4238
+P(fish=inf) = -24.4379
+P(fish=prep) = -20.9905
+
+FINAL BACKPTR NETWORK
+Backptr(fish=noun) = verb
+Backptr(fish=verb) = noun
+Backptr(fish=inf) = verb
+Backptr(fish=prep) = noun
+
+BEST TAG SEQUENCE HAS LOG PROBABILITY = -10.4238
+fish -> verb
+bears -> noun
+
+
+PROCESSING SENTENCE: mark has fish
+
+FINAL VITERBI NETWORK
+P(mark=noun) = -3.7959
+P(mark=verb) = -7.3808
+P(mark=inf) = -26.5754
+P(mark=prep) = -26.5754
+P(has=noun) = -21.0456
+P(has=verb) = -9.4762
+P(has=inf) = -22.8530
+P(has=prep) = -18.8205
+P(fish=noun) = -13.4972
+P(fish=verb) = -25.5036
+P(fish=inf) = -24.9484
+P(fish=prep) = -24.7640
+
+FINAL BACKPTR NETWORK
+Backptr(has=noun) = verb
+Backptr(has=verb) = noun
+Backptr(has=inf) = verb
+Backptr(has=prep) = noun
+Backptr(fish=noun) = verb
+Backptr(fish=verb) = noun
+Backptr(fish=inf) = verb
+Backptr(fish=prep) = verb
+
+BEST TAG SEQUENCE HAS LOG PROBABILITY = -13.4972
+fish -> noun
+has -> verb
+mark -> noun
+
+
+PROCESSING SENTENCE: mark likes to fish for fish
+
+FINAL VITERBI NETWORK
+P(mark=noun) = -3.7959
+P(mark=verb) = -7.3808
+P(mark=inf) = -26.5754
+P(mark=prep) = -26.5754
+P(likes=noun) = -21.0456
+P(likes=verb) = -17.7051
+P(likes=inf) = -22.8530
+P(likes=prep) = -18.8205
+P(to=noun) = -31.3698
+P(to=verb) = -34.9548
+P(to=inf) = -19.9040
+P(to=prep) = -21.3045
+P(fish=noun) = -25.1828
+P(fish=verb) = -24.1555
+P(fish=inf) = -46.4794
+P(fish=prep) = -46.3945
+P(for=noun) = -37.8203
+P(for=verb) = -39.0920
+P(for=inf) = -39.6277
+P(for=prep) = -28.2758
+P(fish=noun) = -32.1541
+P(fish=verb) = -42.2783
+P(fish=inf) = -54.5642
+P(fish=prep) = -52.8450
+
+FINAL BACKPTR NETWORK
+Backptr(likes=noun) = verb
+Backptr(likes=verb) = noun
+Backptr(likes=inf) = verb
+Backptr(likes=prep) = noun
+Backptr(to=noun) = verb
+Backptr(to=verb) = noun
+Backptr(to=inf) = verb
+Backptr(to=prep) = verb
+Backptr(fish=noun) = prep
+Backptr(fish=verb) = inf
+Backptr(fish=inf) = inf
+Backptr(fish=prep) = noun
+Backptr(for=noun) = verb
+Backptr(for=verb) = noun
+Backptr(for=inf) = verb
+Backptr(for=prep) = verb
+Backptr(fish=noun) = prep
+Backptr(fish=verb) = noun
+Backptr(fish=inf) = verb
+Backptr(fish=prep) = noun
+
+BEST TAG SEQUENCE HAS LOG PROBABILITY = -32.1541
+fish -> noun
+for -> prep
+fish -> verb
+to -> inf
+likes -> verb
+mark -> noun
+
